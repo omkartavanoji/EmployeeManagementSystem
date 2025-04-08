@@ -28,6 +28,7 @@ public class SecurityConfig {
 				.formLogin(i->i.disable())
 				.authorizeHttpRequests(i -> i
 																.requestMatchers("/admin/login").permitAll()
+																.requestMatchers("/employee/login").permitAll()
 																.requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 																.requestMatchers("/employee/**").hasAuthority("ROLE_EMPLOYEE")			
 																.anyRequest().authenticated())

@@ -34,18 +34,17 @@ public class JwtFilter extends OncePerRequestFilter {
 			token = authHeader.substring(7);
 			email = jwtService.extractEmail(token);
 		}
-			if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-				UserDetails userDetails = myUserDetailService.loadUserByUsername(email);
-				if (jwtService.validateToken(token, userDetails)) {
-					UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-							userDetails, null, userDetails.getAuthorities());
-					authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-					SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-				} else {
-					System.out.println("JWT VALIDATION FAILED");
-				}
+		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userDetails = myUserDetailService.loadUserByUsername(email);
+			if (jwtService.validateToken(token, userDetails)) {
+				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+						userDetails, null, userDetails.getAuthorities());
+				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+			} else {
+				System.out.println("JWT VALIDATION FAILED");
 			}
-			filterChain.doFilter(request, response);
 		}
+		filterChain.doFilter(request, response);
 	}
-
+}

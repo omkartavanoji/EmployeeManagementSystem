@@ -18,11 +18,13 @@
 	public class Employee {
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
+		@JsonIgnore
 		private int id;
 		private String firstname;
 		private String lastname;
 		private String department;
 		private String salary;
+		@JsonIgnore
 		private boolean verify;
 		@JsonIgnore
 		@OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)

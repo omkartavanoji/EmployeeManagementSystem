@@ -1,5 +1,6 @@
 package com.example.employee.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,10 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.empdto.Employee;
 import com.example.employee.empdto.EmployeeDTO;
+import com.example.employee.empdto.EmployeeLoginDTO;
 import com.example.employee.empdto.User;
 import com.example.employee.repository.EmployeeRepository;
 import com.example.employee.repository.UserRepository;
@@ -36,7 +39,8 @@ public class AdminService {
 	@Autowired
 	JwtService jwtService;
 
-	public ResponseEntity<String> login(User user) {
+	public ResponseEntity<String> login(EmployeeLoginDTO user) {
+		System.out.println(user.getEmail()+"--"+user.getPassword());
 		Authentication authentication = manager
 				.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 		if (authentication.isAuthenticated()) {
@@ -53,7 +57,8 @@ public class AdminService {
 	public ResponseEntity<String> addEmployee(EmployeeDTO employeeDTO) {
 		User user = new User();
 		user.setEmail(employeeDTO.getEmail());
-		user.setPassword(employeeDTO.getPassword());
+		String password = employeeDTO.getPassword();
+		user.setPassword(new BCryptPasswordEncoder(12).encode(password));
 		user.setRole("EMPLOYEE");
 		Employee employee = new Employee();
 		employee.setFirstname(employeeDTO.getFirstname());
@@ -65,56 +70,56 @@ public class AdminService {
 		return new ResponseEntity<String>("EMPLOYEE REGISTERED SUCCESSFULLY", HttpStatus.CREATED);
 	}
 
-	public ResponseEntity<List<Employee>> getEmployees() {
-		List<Employee> list = employeeRepository.findAll();
+	public ResponseEntity<List<User>> getEmployees() {
+		List<User> list = userRepository.findAll();
 		if (list.isEmpty()) {
-			return new ResponseEntity<List<Employee>>(list, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<List<User>>(list,HttpStatus.NOT_FOUND);
 		} else {
-			return new ResponseEntity<List<Employee>>(list, HttpStatus.OK);
+			return new ResponseEntity<List<User>>(list,HttpStatus.OK);
 		}
 	}
 
 	public ResponseEntity<Object> getEmployeeById(int id) {
-		Optional<Employee> emp = employeeRepository.findById(id);
-		if (emp.isEmpty()) {
-			return new ResponseEntity<Object>("NO EMPLOYEE PRESENT WITH ID "+id,HttpStatus.NOT_FOUND);
+		Optional<User> user = userRepository.findById(id);
+		if (user.isEmpty()) {
+			return new ResponseEntity<Object>("NO EMPLOYEE PRESENT WITH ID " + id, HttpStatus.NOT_FOUND);
 		} else {
-			return new ResponseEntity<Object>(emp, HttpStatus.OK);
+			return new ResponseEntity<Object>(user.get().getEmployee(), HttpStatus.OK);
 		}
 	}
 
 	public ResponseEntity<Object> deleteEmployee(int id) {
-		Optional<Employee> optional = employeeRepository.findById(id);
+		Optional<User> optional = userRepository.findById(id);
 		if (optional.isEmpty()) {
 			return new ResponseEntity<Object>("NO DATA FOUND TO DELETE", HttpStatus.NOT_FOUND);
 		} else {
-			employeeRepository.deleteById(id);
+			userRepository.deleteById(id);
 			return new ResponseEntity<Object>("EMPLOYEE DATA DELETED ", HttpStatus.OK);
 		}
 	}
 
 	public ResponseEntity<Object> updateEmployee(EmployeeDTO employeeDTO) {
-		if (employeeRepository.existsById(employeeDTO.getId())) {
-			Employee emp=employeeRepository.findById(employeeDTO.getId()).get();
-			emp.setDepartment(employeeDTO.getDepartment());
-			emp.setFirstname(employeeDTO.getFirstname());
-			emp.setLastname(employeeDTO.getLastname());
-			emp.setSalary(employeeDTO.getSalary());
-			employeeRepository.save(emp);
-			return new ResponseEntity<Object> ("EMPLOYEE DATA UPDATED SUCCESSFULLY",HttpStatus.OK);
+		if (userRepository.existsById(employeeDTO.getId())) {
+			User emp = userRepository.findById(employeeDTO.getId()).get();
+			emp.getEmployee().setDepartment(employeeDTO.getDepartment());
+			emp.getEmployee().setFirstname(employeeDTO.getFirstname());
+			emp.getEmployee().setLastname(employeeDTO.getLastname());
+			emp.getEmployee().setSalary(employeeDTO.getSalary());
+			employeeRepository.save(emp.getEmployee());
+			return new ResponseEntity<Object>("EMPLOYEE DATA UPDATED SUCCESSFULLY", HttpStatus.OK);
 		} else {
-            return new ResponseEntity<Object>("NO EMPLOYEE PRESENT",HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Object>("NO EMPLOYEE PRESENT", HttpStatus.BAD_REQUEST);
 		}
 	}
 
 	public ResponseEntity<Object> updateEmployeeRole(int id, String role) {
-		User user=userRepository.findById(id).get();
-		if (user!=null) {
+		User user = userRepository.findById(id).get();
+		if (user != null) {
 			user.setRole(role);
 			userRepository.save(user);
-			return new ResponseEntity<Object>("ROLE UPDATED",HttpStatus.OK);
+			return new ResponseEntity<Object>("ROLE UPDATED", HttpStatus.OK);
 		} else {
-			return new ResponseEntity<Object>("NO USER FOUND",HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Object>("NO USER FOUND", HttpStatus.NOT_FOUND);
 		}
 	}
 }

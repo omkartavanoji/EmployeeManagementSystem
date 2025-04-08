@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.empdto.Employee;
 import com.example.employee.empdto.EmployeeDTO;
+import com.example.employee.empdto.EmployeeLoginDTO;
 import com.example.employee.empdto.User;
 import com.example.employee.service.AdminService;
 @RestController
@@ -29,7 +29,7 @@ public class AdminController {
 	AdminService adminService;
 
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody User user) {
+	public ResponseEntity<String> login(@RequestBody EmployeeLoginDTO user) {
 		return adminService.login(user);
 	}
 
@@ -39,7 +39,7 @@ public class AdminController {
 	}
 	
 	@GetMapping("/getemployees")
-	public ResponseEntity<List<Employee>> getEmployess(){
+	public ResponseEntity<List<User>> getEmployess(){
 		return adminService.getEmployees();
 	}
 	
