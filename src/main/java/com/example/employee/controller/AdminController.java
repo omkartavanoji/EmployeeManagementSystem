@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.employee.empdto.Employee;
 import com.example.employee.empdto.EmployeeDTO;
 import com.example.employee.empdto.EmployeeLoginDTO;
+import com.example.employee.empdto.TaskDTO;
 import com.example.employee.empdto.User;
 import com.example.employee.service.AdminService;
 @RestController
@@ -39,9 +39,9 @@ public class AdminController {
 	}
 	
 	@GetMapping("/getemployees")
-	public ResponseEntity<List<User>> getEmployess(){
+	public ResponseEntity<List<User>> getEmployess(){ 
 		return adminService.getEmployees();
-	}
+	} 
 	
 	@GetMapping("/getemployee")
 	public ResponseEntity<Object>getEmployeeById(@RequestParam int id){
@@ -61,6 +61,11 @@ public class AdminController {
 	@PutMapping("/updateemployeerole/{id}-{role}")
 	public ResponseEntity<Object> updateEmployeeRole(@PathVariable int id, @PathVariable String role){
 		return adminService.updateEmployeeRole(id,role);
+	}
+	
+	@PostMapping("/assign-task")
+	public ResponseEntity<Object> assignTaskEmployee(@RequestBody TaskDTO taskDTO){
+		return adminService.assignTaskEmployee(taskDTO);
 	}
 	
 }

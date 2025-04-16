@@ -1,30 +1,26 @@
 package com.example.employee.empdto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-public class User {
+public class Task {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	private String email;
+	private String title;
+	private String description;
+	private String status;
 	@JsonIgnore
-	private String password;
-	private String role;
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	private Employee employee;
 }

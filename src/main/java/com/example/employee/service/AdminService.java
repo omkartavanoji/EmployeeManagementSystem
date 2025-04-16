@@ -16,8 +16,11 @@ import org.springframework.stereotype.Service;
 import com.example.employee.empdto.Employee;
 import com.example.employee.empdto.EmployeeDTO;
 import com.example.employee.empdto.EmployeeLoginDTO;
+import com.example.employee.empdto.Task;
+import com.example.employee.empdto.TaskDTO;
 import com.example.employee.empdto.User;
 import com.example.employee.repository.EmployeeRepository;
+import com.example.employee.repository.TaskRepository;
 import com.example.employee.repository.UserRepository;
 import com.example.employee.securityconf.JwtService;
 import com.example.employee.securityconf.UserPrincipal;
@@ -39,8 +42,11 @@ public class AdminService {
 	@Autowired
 	JwtService jwtService;
 
+	@Autowired
+	TaskRepository taskRepository;
+
 	public ResponseEntity<String> login(EmployeeLoginDTO user) {
-		System.out.println(user.getEmail()+"--"+user.getPassword());
+		System.out.println(user.getEmail() + "--" + user.getPassword());
 		Authentication authentication = manager
 				.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 		if (authentication.isAuthenticated()) {
@@ -73,9 +79,9 @@ public class AdminService {
 	public ResponseEntity<List<User>> getEmployees() {
 		List<User> list = userRepository.findAll();
 		if (list.isEmpty()) {
-			return new ResponseEntity<List<User>>(list,HttpStatus.NOT_FOUND);
+			return new ResponseEntity<List<User>>(list, HttpStatus.NOT_FOUND);
 		} else {
-			return new ResponseEntity<List<User>>(list,HttpStatus.OK);
+			return new ResponseEntity<List<User>>(list, HttpStatus.OK);
 		}
 	}
 
@@ -120,6 +126,21 @@ public class AdminService {
 			return new ResponseEntity<Object>("ROLE UPDATED", HttpStatus.OK);
 		} else {
 			return new ResponseEntity<Object>("NO USER FOUND", HttpStatus.NOT_FOUND);
+		}
+	}
+
+	public ResponseEntity<Object> assignTaskEmployee(TaskDTO taskDTO) {
+		Optional<User> emp =userRepository.findById(taskDTO.getEmployee_id());
+		if (emp.isPresent()) {
+			Task task = new Task();
+			task.setTitle(taskDTO.getTitle());
+			task.setDescription(taskDTO.getDescription());
+			task.setStatus(taskDTO.getStatus());
+			task.setEmployee(emp.get().getEmployee());
+			taskRepository.save(task);
+			return new ResponseEntity<Object>("Task Assigned Succesfully", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Object>("Error Occured", HttpStatus.CONFLICT);
 		}
 	}
 }
