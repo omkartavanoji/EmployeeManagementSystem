@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private int empid;
 	private String email;
 	@JsonIgnore
 	private String password;

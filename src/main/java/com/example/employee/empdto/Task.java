@@ -21,6 +21,6 @@ public class Task {
 	private String status;
 	@JsonIgnore
 	@ManyToOne
-	@JoinColumn(name = "employee_id")
+	@JoinColumn(name = "emptask_id")
 	private Employee employee;
 }

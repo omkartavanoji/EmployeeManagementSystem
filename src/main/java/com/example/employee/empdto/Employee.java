@@ -15,7 +15,7 @@
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Entity
-	public class Employee {
+	public class Employee { 
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		@JsonIgnore
@@ -29,4 +29,4 @@
 		@JsonIgnore
 		@OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
 	    private User user;
-	}
+	} 
